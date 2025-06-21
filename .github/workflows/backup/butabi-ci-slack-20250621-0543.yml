@@ -1,0 +1,25 @@
+name: ButabiBot CI 🎛️🕺
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  send-slack-message:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Format message
+        id: message
+        run: |
+          echo "DISCO_MESSAGE=:man_dancing: *New push to* \`main\`! :mirror_ball:" >> $GITHUB_ENV
+          echo "DISCO_COMMIT=*Commit:* \`${{ github.sha }}\`" >> $GITHUB_ENV
+          echo "DISCO_MSG_LINE3=*Quote:* _\"You should be dancing, yeah!\"_ 🕺" >> $GITHUB_ENV
+
+      - name: Send message to Slack
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data "{
+            \"text\": \"${{ env.DISCO_MESSAGE }}\n${{ env.DISCO_COMMIT }}\n${{ env.DISCO_MSG_LINE3 }}\"
+          }" "$SLACK_WEBHOOK_URL"
