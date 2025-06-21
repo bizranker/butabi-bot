@@ -1,4 +1,4 @@
-name: Butabi Slack Alert
+name: Notify Slack
 
 on:
   workflow_call:
@@ -13,14 +13,14 @@ jobs:
         run: |
           curl -X POST -H 'Content-type: application/json' --data "{
             \"text\": \"
-*🚀 New Push to Main!*
-👑 *Decree issued by ButabiBot!*
+            *🦚 New Push to Main!*
+            *📜 Decree issued by ButabiBot!*
 
-🧑‍💻 *Pushed by:* ${{ github.actor }}
-🌿 *Branch:* ${{ github.ref_name }}
-📦 *Repository:* ${{ github.repository }}
-🕐 *Time:* $(date -u)
+            *👑 Pushed by:* \`${{ github.actor }}\`
+            *🌿 Branch:* \`${{ github.ref_name }}\`
+            *📦 Repository:* \`${{ github.repository }}\`
+            *🕰 Time:* \`$(date -u)\`
 
-🔗 <https://github.com/${{ github.repository }}/commit/${{ github.sha }}|View Commit>
+            <https://github.com/${{ github.repository }}/commit/${{ github.sha }}|View Commit>
             \"
           }" $SLACK_WEBHOOK_URL
