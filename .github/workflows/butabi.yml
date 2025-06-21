@@ -9,5 +9,8 @@ jobs:
   notify:
     uses: ./.github/workflows/butabi-ci-slack.yml
     with:
-      message: "🚀 New push by a Code Gladiator! Prepare for CI glory!"
-      webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+      commit_sha: ${{ github.sha }}
+      commit_message: ${{ github.event.head_commit.message }}
+      quote: "If you build it, they will ship. 🛠️ *Field of DevOps*"
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

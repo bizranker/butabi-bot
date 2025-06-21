@@ -1,37 +1,31 @@
-name: Send Slack Notification
+name: Send DevOps Slack Quote
 
 on:
   workflow_call:
     inputs:
-      message:
+      commit_sha:
         required: true
         type: string
-      webhook:
+      commit_message:
         required: true
         type: string
+      quote:
+        required: true
+        type: string
+    secrets:
+      SLACK_WEBHOOK_URL:
+        required: true
 
 jobs:
   send-message:
     runs-on: ubuntu-latest
     steps:
-      - name: 📦 Checkout code
-        uses: actions/checkout@v4
-
-      - name: 📣 Send Slack Notification
-        uses: slackapi/slack-github-action@v1.24.0
-        with:
-          payload: |
-            {
-              "text": "${{ inputs.message }}",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*Repo:* <https://github.com/${{ github.repository }}|${{ github.repository }}>\n*Branch:* `${{ github.ref_name }}`\n*Commit:* `${{ github.sha }}`\n*Message:* `${{ github.event.head_commit.message }}`"
-                  }
-                }
-              ]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ inputs.webhook }}
+      - name: Send funny DevOps quote to Slack
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+          --data '{
+            "text": ":rocket: *A new push just hit `main`!* :rocket:\n
+            > *Commit:* `${{ inputs.commit_sha }}`\n
+            > *Message:* `${{ inputs.commit_message }}`\n
+            > *Quote:* \"${{ inputs.quote }}\""
+          }' ${{ secrets.SLACK_WEBHOOK_URL }}
