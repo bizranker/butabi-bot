@@ -1,0 +1,17 @@
+name: ButabiBot Welcome
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  send_welcome:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Welcome Message to Slack
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+          --data '{"text":"🕺💃 *The Butabi Brothers are online.* Welcome to the club. No red lights, no stop signs, no pulling over for pictures!"}' \
+          ${{ secrets.BUTABI_SLACK_WEBHOOK }}
