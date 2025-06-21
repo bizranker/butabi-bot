@@ -1,4 +1,4 @@
-name: ButabiBot Decree Drop
+name: Butabi Bot Slack CI
 
 on:
   push:
@@ -6,16 +6,6 @@ on:
       - main
 
 jobs:
-  announce:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Send decree to Slack
-        env:
-          SLACK_WEBHOOK: ${{ secrets.BUTABIBOT_WEBHOOK }}
-        run: |
-          curl -X POST -H 'Content-type: application/json' \
-          --data '{"text":"🕺 Decree issued by *ButabiBot*! A new commit has been pushed to *main*."}' \
-          "$SLACK_WEBHOOK"
+  notify-push:
+    uses: ./.github/workflows/butabi-ci-slack.yml
+    secrets: inherit
