@@ -9,6 +9,12 @@ jobs:
   send-slack-message:
     runs-on: ubuntu-latest
     steps:
+      - name: Extract Commit Info
+        id: vars
+        run: |
+          echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+          echo "msg=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
+
       - name: Format message
         run: |
           echo "DISCO_MESSAGE=🕺 *John Travolta has entered the pipeline.* \\n💃 *New push to* \`main\` ✨ :mirror_ball:" >> $GITHUB_ENV
@@ -16,7 +22,7 @@ jobs:
       - name: Send message to Slack
         run: |
           curl -X POST -H 'Content-type: application/json' \
-          --data "{\"text\":\"🪩 *CI Disco Alert*\\n🎶 Stayin’ alive... barely.\\n$DISCO_MESSAGE\\n\\n> _'Whether you're a brother or whether you're a mother, you're pushin' to \`main\`.'_\\n> — *ButabiBot, Saturday Night DevOps*\"}" \
+          --data "{\"text\":\"🪩 *CI Disco Alert*\\n🎶 Stayin’ alive... barely.\\n$DISCO_MESSAGE\\n\\n*Commit:* \`${{ steps.vars.outputs.sha }}\`\\n*Message:* ${{ steps.vars.outputs.msg }}\\n\\n> _'Whether you're a brother or whether you're a mother, you're pushin' to \`main\`.'_\\n> — *ButabiBot, Saturday Night DevOps*\"}" \
           $SLACK_WEBHOOK_URL
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
