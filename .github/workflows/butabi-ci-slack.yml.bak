@@ -29,17 +29,20 @@ jobs:
             "Are you not entertained... by this push?!"
             "Smokin’! 🔥 The Mask"
             "I’m a peacock, you gotta let me deploy! 🦚 The Other Guys"
-            "If you build it, they will ship. 🚢 Field of DevOps"
+            "If you build it, they will ship. 🛳️ Field of DevOps"
           )
           RANDOM_INDEX=$((RANDOM % ${#QUOTES[@]}))
           echo "random_quote=${QUOTES[$RANDOM_INDEX]}" >> $GITHUB_OUTPUT
 
-      - name: 📢 Send Slack message
+      - name: 📣 Send Slack message
         uses: slackapi/slack-github-action@v1.24.0
         with:
           payload: |
             {
-              "text": "*🦍 ${{ steps.vars.outputs.actor }}* pushed a commit to *main*!\n💬 \"${{ steps.quote.outputs.random_quote }}\"\n🔢 Commit: `${{ steps.vars.outputs.commit_sha }}`\n📝 Message: _${{ steps.vars.outputs.commit_msg }}_"
+              "text": "*🔔 ${{ steps.vars.outputs.actor }}* pushed a commit to *main*!
+
+*Commit:* `${{ inputs.commit }}`
+*Message:* `${{ inputs.message }}`
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.BUTABIBOT_WEBHOOK }}
