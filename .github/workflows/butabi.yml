@@ -8,3 +8,5 @@ on:
 jobs:
   notify:
     uses: ./.github/workflows/butabi-ci-slack.yml
+    secrets:
+      webhook: ${{ secrets.SLACK_WEBHOOK_URL }}

@@ -1,26 +1,35 @@
-name: Notify Slack
+name: Slack Alert
 
 on:
   workflow_call:
+    inputs:
+      message:
+        required: false
+        type: string
+    secrets:
+      webhook:
+        required: true
 
 jobs:
   notify-slack:
+    name: Send Slack Notification
     runs-on: ubuntu-latest
     steps:
-      - name: Post Glorious Decree to Slack
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.BUTABIBOT_WEBHOOK }}
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Get Commit Info
+        id: commit_info
         run: |
-          curl -X POST -H 'Content-type: application/json' --data "{
-            \"text\": \"
-            *🦚 New Push to Main!*
-            *📜 Decree issued by ButabiBot!*
+          echo "hash=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+          echo "msg=$(git log -1 --pretty=format:'%s')" >> "$GITHUB_OUTPUT"
 
-            *👑 Pushed by:* \`${{ github.actor }}\`
-            *🌿 Branch:* \`${{ github.ref_name }}\`
-            *📦 Repository:* \`${{ github.repository }}\`
-            *🕰 Time:* \`$(date -u)\`
-
-            <https://github.com/${{ github.repository }}/commit/${{ github.sha }}|View Commit>
-            \"
-          }" $SLACK_WEBHOOK_URL
+      - name: Send Slack Message
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": ":rocket: *CI/CD Deployment Alert*\n\n:clapper: _\"You pushin’ code... I'm pushin' containers.\"_\n\n*Commit:* `${{ steps.commit_info.outputs.hash }}`\n*Message:* _${{ steps.commit_info.outputs.msg }}_\n\n:muscle: You either deploy like a legend... or debug like a peasant."
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.webhook }}
