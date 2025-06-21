@@ -25,13 +25,13 @@ jobs:
         id: quote
         run: |
           QUOTES=(
-            "What is love? Baby don’t merge me!"
+            "What is Love? Baby don't merge me!"
             "Are you not entertained... by this push?!"
-            "Smokin’! 🔥 The Mask"
-            "I’m a peacock, you gotta let me deploy! 🦚 The Other Guys"
-            "If you build it, they will ship. 🛳️ Field of DevOps"
+            "Smokin'! 🔥 The Mask"
+            "I'm a peacock, you gotta let me deploy! 🦚 The Other Guys"
+            "If you build it, they will ship. 🏗️ Field of DevOps"
           )
-          RANDOM_INDEX=$((RANDOM % ${#QUOTES[@]}))
+          RANDOM_INDEX=$(($RANDOM % ${#QUOTES[@]}))
           echo "random_quote=${QUOTES[$RANDOM_INDEX]}" >> $GITHUB_OUTPUT
 
       - name: 📣 Send Slack message
@@ -39,10 +39,16 @@ jobs:
         with:
           payload: |
             {
-              "text": "*🔔 ${{ steps.vars.outputs.actor }}* pushed a commit to *main*!
-
-*Commit:* `${{ inputs.commit }}`
-*Message:* `${{ inputs.message }}`
+              "text": "*New Push to Main!* :rocket:",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*${{ github.actor }}* just pushed to `main` branch.\n*Commit:* `${{ inputs.commit }}`\n*Message:* ${{ inputs.message }}\n\n> _${{ steps.quote.outputs.random_quote }}_"
+                  }
+                }
+              ]
             }
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.BUTABIBOT_WEBHOOK }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

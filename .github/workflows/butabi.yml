@@ -1,4 +1,4 @@
-name: Butabi Bot Slack CI
+name: Butabi
 
 on:
   push:
@@ -6,9 +6,8 @@ on:
       - main
 
 jobs:
-  notify_push:
+  notify:
     uses: ./.github/workflows/butabi-ci-slack.yml
     with:
       commit: ${{ github.sha }}
       message: ${{ github.event.head_commit.message }}
-    secrets: inherit
