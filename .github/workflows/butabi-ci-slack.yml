@@ -1,37 +1,24 @@
-name: Butabi CI Slack Notifier
+name: 🚨 Slack Alert
 
 on:
-  workflow_call:
-    inputs:
-      commit:
-        required: true
-        type: string
-      message:
-        required: true
-        type: string
+  push:
+    branches:
+      - main
 
 jobs:
   notify-push:
     runs-on: ubuntu-latest
     steps:
-      - name: 🧠 Extract Git metadata
-        id: vars
-        run: |
-          echo "actor=${{ github.actor }}" >> $GITHUB_OUTPUT
-          echo "commit_msg=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
-          echo "commit_sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
       - name: 🎭 Pick a comedy quote
-        id: quote
         run: |
           QUOTES=(
             "What is Love? Baby don't merge me!"
             "Are you not entertained... by this push?!"
             "Smokin'! 🔥 The Mask"
             "I'm a peacock, you gotta let me deploy! 🦚 The Other Guys"
-            "If you build it, they will ship. 🏗️ Field of DevOps"
+            "If you build it, they will ship. 🛠️ Field of DevOps"
           )
-          RANDOM_INDEX=$(($RANDOM % ${#QUOTES[@]}))
+          RANDOM_INDEX=$((RANDOM % ${#QUOTES[@]}))
           echo "random_quote=${QUOTES[$RANDOM_INDEX]}" >> $GITHUB_OUTPUT
 
       - name: 📣 Send Slack message
@@ -39,16 +26,16 @@ jobs:
         with:
           payload: |
             {
-              "text": "*New Push to Main!* :rocket:",
+              "text": "*🚀 New Push to Main!*",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*${{ github.actor }}* just pushed to `main` branch.\n*Commit:* `${{ inputs.commit }}`\n*Message:* ${{ inputs.message }}\n\n> _${{ steps.quote.outputs.random_quote }}_"
+                    "text": "*${{ github.actor }}* just pushed to `main`.\n*Commit:* `${{ github.sha }}`\n${{ steps.comedy.outputs.random_quote }}"
                   }
                 }
               ]
             }
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.BUTABIBOT_WEBHOOK }}
