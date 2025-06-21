@@ -1,5 +1,4 @@
-
-name: 🪩 CI Disco Mode v3: Travolta Reporting In
+name: 🪩 CI Disco Mode v2: Travolta Reporting In
 
 on:
   push:
@@ -14,19 +13,23 @@ jobs:
         id: format
         run: |
           echo 'DISCO_MESSAGE<<EOF' >> $GITHUB_ENV
-          echo ":disco_ball: *CI Disco Alert!*" >> $GITHUB_ENV
-          echo "Stayin' alive... barely." >> $GITHUB_ENV
+          echo ":disco_ball: *CI Disco Alert*" >> $GITHUB_ENV
+          echo "Stayin’ alive... barely." >> $GITHUB_ENV
           echo ":man_dancing: *John Travolta has entered the pipeline.*" >> $GITHUB_ENV
           echo "" >> $GITHUB_ENV
-          echo "*New push to* `main` 🕺" >> $GITHUB_ENV
+          echo "*New push to* \`main\` 🌐" >> $GITHUB_ENV
           echo "*Commit:* ${{ github.sha }}" >> $GITHUB_ENV
           echo "*Message:* ${{ github.event.head_commit.message }}" >> $GITHUB_ENV
-          echo "- ButabiBot, Saturday Night DevOps" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          echo "" >> $GITHUB_ENV
+          echo "_“Whether you're a brother or whether you're a mother, you're pushin’ to_ *main*.”" >> $GITHUB_ENV
+          echo "– ButabiBot, Saturday Night DevOps" >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
 
       - name: Send message to Slack
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           DISCO_MESSAGE: ${{ env.DISCO_MESSAGE }}
         run: |
-          curl -X POST -H 'Content-type: application/json'             --data "{"text":"${DISCO_MESSAGE}"}"             $SLACK_WEBHOOK_URL
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{\"text\": \"$DISCO_MESSAGE\"}" \
+            $SLACK_WEBHOOK_URL
