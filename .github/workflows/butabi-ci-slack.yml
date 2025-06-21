@@ -18,7 +18,7 @@ jobs:
           echo "Stayin' alive... barely." >> $GITHUB_ENV
           echo ":man_dancing: *John Travolta has entered the pipeline.*" >> $GITHUB_ENV
           echo "" >> $GITHUB_ENV
-          echo "*New push to* `main` 🕺" >> $GITHUB_ENV
+          echo "**New push to* main 🎯**" >> $GITHUB_ENV
           echo "*Commit:* ${{ github.sha }}" >> $GITHUB_ENV
           echo "*Message:* ${{ github.event.head_commit.message }}" >> $GITHUB_ENV
           echo "- ButabiBot, Saturday Night DevOps" >> $GITHUB_ENV
@@ -29,4 +29,5 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           DISCO_MESSAGE: ${{ env.DISCO_MESSAGE }}
         run: |
-          curl -X POST -H 'Content-type: application/json'             --data "{"text":"${DISCO_MESSAGE}"}"             $SLACK_WEBHOOK_URL
+          curl -X POST -H "Content-type: application/json" -d "{\"text\":\"${DISCO_MESSAGE}\"}" "$SLACK_WEBHOOK_URL"
+
