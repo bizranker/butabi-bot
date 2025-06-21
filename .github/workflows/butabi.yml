@@ -7,5 +7,6 @@ on:
 
 jobs:
   notify-push:
+    name: 🚀 Run Slack CI Workflow
     uses: ./.github/workflows/butabi-ci-slack.yml
     secrets: inherit

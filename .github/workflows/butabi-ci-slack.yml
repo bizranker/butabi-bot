@@ -1,45 +1,38 @@
 name: Butabi CI Slack Notifier
 
 on:
-  push:
-    branches:
-      - main
+  workflow_call:
 
 jobs:
   notify-push:
     runs-on: ubuntu-latest
     steps:
-
       - name: 🧠 Extract Git metadata
         id: vars
         run: |
-          echo "::set-output name=actor::$(echo '${{ github.actor }}')"
-          echo "::set-output name=commit_msg::$(git log -1 --pretty=%B)"
-          echo "::set-output name=commit_sha::$(git rev-parse --short HEAD)"
+          echo "actor=${{ github.actor }}" >> $GITHUB_OUTPUT
+          echo "commit_msg=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
+          echo "commit_sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-      - name: 🎬 Pick a comedy quote
+      - name: 🎭 Pick a comedy quote
         id: quote
         run: |
           QUOTES=(
             "What is love? Baby don’t merge me!"
             "Are you not entertained... by this push?!"
-            "Smokin’! – The Mask"
-            "I’m a peacock, you gotta let me deploy! – The Other Guys"
-            "If you build it, they will ship. – Field of DevOps"
+            "Smokin’! 🔥 The Mask"
+            "I’m a peacock, you gotta let me deploy! 🦚 The Other Guys"
+            "If you build it, they will ship. 🚢 Field of DevOps"
           )
-          RANDOM_INDEX=$(($RANDOM % ${#QUOTES[@]}))
-          echo "::set-output name=random_quote::${QUOTES[$RANDOM_INDEX]}"
+          RANDOM_INDEX=$((RANDOM % ${#QUOTES[@]}))
+          echo "random_quote=${QUOTES[$RANDOM_INDEX]}" >> $GITHUB_OUTPUT
 
-      - name: 📣 Send Slack message
+      - name: 📢 Send Slack message
         uses: slackapi/slack-github-action@v1.24.0
         with:
           payload: |
             {
-              "text": "*🚀 ${{ steps.vars.outputs.actor }} pushed a commit to `main`!*  \n
-🧠 \"${{ steps.quote.outputs.random_quote }}\"  \n
-📝 *Message:* ${{ steps.vars.outputs.commit_msg }}  \n
-🔗 *Commit:* https://github.com/${{ github.repository }}/commit/${{ steps.vars.outputs.commit_sha }}  \n
-📸 *Preview:* https://raw.githubusercontent.com/${{ github.repository }}/main/preview.png"
+              "text": "*🦍 ${{ steps.vars.outputs.actor }}* pushed a commit to *main*!\n💬 \"${{ steps.quote.outputs.random_quote }}\"\n🔢 Commit: `${{ steps.vars.outputs.commit_sha }}`\n📝 Message: _${{ steps.vars.outputs.commit_msg }}_"
             }
         env:
-          WEBHOOK_URL: ${{ secrets.BUTABIBOT_SLACK_ALERT }}
+          SLACK_WEBHOOK_URL: ${{ secrets.BUTABIBOT_WEBHOOK }}
