@@ -1,41 +1,26 @@
-name: 🚀 Butabi CI
+name: Butabi Slack Alert
 
 on:
-  push:
-    branches:
-      - main
+  workflow_call:
 
 jobs:
-  notify-push:
+  notify-slack:
     runs-on: ubuntu-latest
     steps:
-      - name: 🧠 Pick a comedy quote
-        run: |
-          QUOTES=(
-            "What is Love? Baby don't merge me!"
-            "Are you not entertained... by this push?!"
-            "Smokin'! 🔥 The Mask"
-            "I'm a peacock, you gotta let me deploy! 🦚 The Other Guys"
-            "If you build it, they will ship. 🛳️ Field of DevOps"
-          )
-          RANDOM_INDEX=$(($RANDOM % ${#QUOTES[@]}))
-          echo "random_quote=${QUOTES[$RANDOM_INDEX]}" >> $GITHUB_ENV
-
-      - name: 📣 Send Slack message
-        uses: slackapi/slack-github-action@v1.24.0
-        with:
-          payload: |
-            {
-              "text": "*🚀 New Push to Main!* :rocket:",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*${{ github.actor }}* just pushed to `main` branch.\n*Quote:* ${{ env.random_quote }}"
-                  }
-                }
-              ]
-            }
+      - name: Post Glorious Decree to Slack
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.BUTABIBOT_WEBHOOK }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data "{
+            \"text\": \"
+*🚀 New Push to Main!*
+👑 *Decree issued by ButabiBot!*
+
+🧑‍💻 *Pushed by:* ${{ github.actor }}
+🌿 *Branch:* ${{ github.ref_name }}
+📦 *Repository:* ${{ github.repository }}
+🕐 *Time:* $(date -u)
+
+🔗 <https://github.com/${{ github.repository }}/commit/${{ github.sha }}|View Commit>
+            \"
+          }" $SLACK_WEBHOOK_URL
