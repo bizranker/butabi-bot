@@ -6,7 +6,9 @@ on:
       - main
 
 jobs:
-  notify-push:
-    name: 🚀 Run Slack CI Workflow
+  notify_push:
     uses: ./.github/workflows/butabi-ci-slack.yml
+    with:
+      commit: ${{ github.sha }}
+      message: ${{ github.event.head_commit.message }}
     secrets: inherit
