@@ -1,4 +1,4 @@
-name: ButabiBot CI 🎛️🕺
+name: 🪩 ButabiBot CI 🎶
 
 on:
   push:
@@ -10,12 +10,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Format message
-        id: message
+        id: format
         run: |
-          echo "DISCO_MESSAGE=\"\ud83c\udfb6 CI Disco Alert\nStayin' alive... barely.\n\n:man_dancing: *John Travolta has entered the pipeline.*\n\n*New push to* \`main\` 🌍\n\n*Commit:* \\`${{ github.sha }}\\`\n*Message:* \"${{ github.event.head_commit.message }}\"\n*Quote:* _\"Whether you're a brother or whether you're a mother, you're pushin' to main.\"_\n\u2014 *ButabiBot, Saturday Night DevOps*\"" >> $GITHUB_ENV
+          MESSAGE=$(cat <<EOF
+:disco_ball: *CI Disco Alert*
+Stayin’ alive... barely.  
+:man_dancing: *John Travolta has entered the pipeline.*
+
+*New push to* \`main\` 🌐  
+*Commit:* ${{ github.sha }}
+*Message:* "${{ github.event.head_commit.message }}"
+
+_“Whether you're a brother or whether you're a mother, you're pushin’ to_ *main*.”  
+– ButabiBot, Saturday Night DevOps
+EOF
+          )
+          echo "DISCO_MESSAGE<<EOF" >> $GITHUB_ENV
+          echo "$MESSAGE" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
       - name: Send message to Slack
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          DISCO_MESSAGE: ${{ env.DISCO_MESSAGE }}
         run: |
           curl -X POST -H 'Content-type: application/json' \
-          --data "{\"text\": \"$DISCO_MESSAGE\"}" \
-          ${{ secrets.SLACK_WEBHOOK_URL }}
+            --data "{\"text\": \"$DISCO_MESSAGE\"}" \
+            $SLACK_WEBHOOK_URL
