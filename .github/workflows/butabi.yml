@@ -8,5 +8,6 @@ on:
 jobs:
   notify:
     uses: ./.github/workflows/butabi-ci-slack.yml
-    secrets:
+    with:
+      message: "🚀 New push by a Code Gladiator! Prepare for CI glory!"
       webhook: ${{ secrets.SLACK_WEBHOOK_URL }}

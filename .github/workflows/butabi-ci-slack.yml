@@ -1,35 +1,37 @@
-name: Slack Alert
+name: Send Slack Notification
 
 on:
   workflow_call:
     inputs:
       message:
-        required: false
+        required: true
         type: string
-    secrets:
       webhook:
         required: true
+        type: string
 
 jobs:
-  notify-slack:
-    name: Send Slack Notification
+  send-message:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
+      - name: 📦 Checkout code
         uses: actions/checkout@v4
 
-      - name: Get Commit Info
-        id: commit_info
-        run: |
-          echo "hash=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
-          echo "msg=$(git log -1 --pretty=format:'%s')" >> "$GITHUB_OUTPUT"
-
-      - name: Send Slack Message
+      - name: 📣 Send Slack Notification
         uses: slackapi/slack-github-action@v1.24.0
         with:
           payload: |
             {
-              "text": ":rocket: *CI/CD Deployment Alert*\n\n:clapper: _\"You pushin’ code... I'm pushin' containers.\"_\n\n*Commit:* `${{ steps.commit_info.outputs.hash }}`\n*Message:* _${{ steps.commit_info.outputs.msg }}_\n\n:muscle: You either deploy like a legend... or debug like a peasant."
+              "text": "${{ inputs.message }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Repo:* <https://github.com/${{ github.repository }}|${{ github.repository }}>\n*Branch:* `${{ github.ref_name }}`\n*Commit:* `${{ github.sha }}`\n*Message:* `${{ github.event.head_commit.message }}`"
+                  }
+                }
+              ]
             }
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.webhook }}
+          SLACK_WEBHOOK_URL: ${{ inputs.webhook }}
